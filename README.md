@@ -20,8 +20,8 @@ be of use to other instructors and to hobbyists.
 
 **Note for CSCE611 students:** you are most welcome to look around in this
 repository, and to open issues or submit pull requests. **However, you should
-not use the issue tracker on this wiki to ask questions relating to the course
-or the course projects**.
+not use the issue tracker on this repository to ask questions relating to the
+course or the course projects**.
 
 ![](./screenshot.png)
 
