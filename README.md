@@ -26,3 +26,30 @@ course or the course projects**.
 ![](./screenshot.png)
 
 *Screenshot of de2gui in action*
+
+Also check out [the demo application](./cmd/de2gui_demo).
+
+# License
+
+See [`./LICENSE`](./LICENSE)
+
+# Contributing
+
+Feel welcome to open issues or submit pull requests. If you would like to
+implement a new feature, please open an issue and discuss your plan, so we
+can avoid duplicated work and reduce the chances of merge conflicts later.
+
+## Roadmap
+
+A feature can have one of several statuses:
+* Planned -- we plan to add this feature ourselves.
+* Wanted -- we are not planning to add this feature ourselves, but would like
+  it if someone else added it and submitted a PR.
+* Indifferent -- we don't need this feature for our use case, but would merge
+  it in a PR if someone else submitted it.
+* Unwanted -- we don't want this feature and would not merge a PR with it.
+
+| Feature | Status |
+|--|--|
+| More realistic, custom KEY/SW widgets | Wanted |
+| Support for the DE2-115 LCD Display | Indifferent |

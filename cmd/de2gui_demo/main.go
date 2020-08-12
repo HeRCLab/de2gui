@@ -1,3 +1,5 @@
+// This example application creates a window with a DE2GUI instance int it.
+// The red LEDs are used to show the tick number.
 package main
 
 import (
@@ -24,6 +26,8 @@ func main() {
 		fmt.Printf("SW changed, switch state is 0x%x\n", s.SW())
 	}
 
+	// It is important to define an OnTick function, as de2gui does not
+	// increment it's internal tick count on it's own.
 	s.OnTick = func(s *de2gui.UIState, final bool) {
 		// the caller has to maintain the simulation tick #
 		s.Tick++
@@ -34,6 +38,8 @@ func main() {
 		}
 	}
 
+	// You probably want to define an OnRest() as well, to allow your
+	// user to re-start the application in place.
 	s.OnReset = func(s *de2gui.UIState) {
 		// the caller handles any reset operations that need to happen
 		// too
