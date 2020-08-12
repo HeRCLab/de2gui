@@ -13,7 +13,8 @@ jobs:
     steps:
       - checkout
       - run: go get -u golang.org/x/lint/golint
-      - run: make clean
+      - run: go get -u github.com/gordonklaus/ineffassign
+      - run: go get -u github.com/kisielk/errcheck
       - run: make test
       - run: make lint
       - run: sh -c 'GOPROXY="https://proxy.golang.org" GO111MODULE=on go get "github.com/herclab/de2gui" || true'
