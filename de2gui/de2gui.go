@@ -8,6 +8,8 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"sync"
+	"time"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/widget"
@@ -50,6 +52,15 @@ type UIState struct {
 	tickEntry    *widget.Entry
 	tickEntryVal int
 
+	// We may want to have multiple goroutines calling tick(), for example
+	// when we are auto-ticking.
+	tickMutex sync.Mutex
+
+	// We write true when we want the ticker to tick at an interval of
+	// a particular number of milliseconds. We write 0 to stop the ticker
+	// from ticking at all.
+	tickChannel chan uint
+
 	widgetTree fyne.CanvasObject
 
 	// The Tick value is displayed to the user as the current tick #, and
@@ -79,6 +90,8 @@ const numHex int = 8
 const numRedLeds int = 18
 const numGreenLeds int = 9
 const numSwitches int = 18
+const tickChannelBufsz int = 10
+const autoTickInterval uint = 200 // 5Hz
 
 // ColorRedActive is the color used for red-colored illuminated parts when they
 // are active.
@@ -122,6 +135,7 @@ func NewUIState() *UIState {
 		switchChecks: make([]*widget.Check, numSwitches),
 		switchLabel:  widget.NewLabelWithStyle("(0x00000)", fyne.TextAlignLeading, fyne.TextStyle{false, false, true}),
 		tickEntry:    widget.NewEntry(),
+		tickChannel:  make(chan uint, tickChannelBufsz),
 	}
 
 	// Create the HEX widgets and initialize them to completely off.
@@ -186,6 +200,14 @@ func NewUIState() *UIState {
 			widget.NewLabel("n="),
 			s.tickEntry,
 			widget.NewButton("Tick N", func() { s.tick(s.tickEntryVal) }),
+			widget.NewCheck("Auto Tick", func(c bool) {
+				if c {
+					s.tickChannel <- autoTickInterval
+				} else {
+					// stop ticking
+					s.tickChannel <- 0
+				}
+			}),
 			widget.NewButton("Reset", func() {
 				if s.OnReset != nil {
 					s.OnReset(s)
@@ -193,6 +215,30 @@ func NewUIState() *UIState {
 			}),
 		),
 	)
+
+	// now we set up a goroutine to handle auto-ticking
+	tickfunc := func() {
+		interval := uint(0)
+		for {
+			select {
+			case n := <-s.tickChannel:
+				interval = n
+			default:
+
+			}
+
+			if interval == 0 {
+				// let the CPU idle before we poll again
+				time.Sleep(50 * time.Millisecond)
+				continue
+			}
+
+			time.Sleep(time.Duration(interval) * time.Millisecond)
+			s.tick(1)
+		}
+	}
+
+	go tickfunc()
 
 	return s
 }
@@ -235,6 +281,8 @@ func (s *UIState) tick(count int) {
 		return
 	}
 
+	s.tickMutex.Lock()
+
 	for i := 0; i < count; i++ {
 		// handle future that need to run on this tick
 		for k, futurelist := range s.futures {
@@ -252,6 +300,7 @@ func (s *UIState) tick(count int) {
 	}
 
 	s.cycleLabel.SetText(fmt.Sprintf("cycle# %d", s.Tick))
+	s.tickMutex.Unlock()
 }
 
 // ClearFutures removes all functions scheduled to run in the future.  You
