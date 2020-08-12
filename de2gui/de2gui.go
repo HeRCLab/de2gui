@@ -34,10 +34,6 @@ import (
 // called.
 type UIState struct {
 	// state storage
-	hex     []uint32
-	ledr    uint32
-	ledg    uint32
-	sw      uint32
 	key     uint32
 	futures map[uint64][]func(*UIState)
 
@@ -83,7 +79,6 @@ const numHex int = 8
 const numRedLeds int = 18
 const numGreenLeds int = 9
 const numSwitches int = 18
-const numRegisters int = 32
 
 // ColorRedActive is the color used for red-colored illuminated parts when they
 // are active.
@@ -117,14 +112,12 @@ var KeyPushMaxTime uint64 = 250
 // created GUI elements.
 func NewUIState() *UIState {
 	s := &UIState{
-		hex:          make([]uint32, numHex),
 		futures:      make(map[uint64][]func(*UIState)),
 		ledrWidget:   ledwidget.NewLedWidget(numRedLeds, ColorRedActive, ColorRedInactive),
 		ledrLabel:    widget.NewLabelWithStyle("(0x00000)", fyne.TextAlignLeading, fyne.TextStyle{false, false, true}),
 		ledgWidget:   ledwidget.NewLedWidget(numGreenLeds, ColorGreenActive, ColorGreenInactive),
 		ledgLabel:    widget.NewLabelWithStyle("(0x000)", fyne.TextAlignLeading, fyne.TextStyle{false, false, true}),
 		hexWidgets:   make([]*hexwidget.HexWidget, numHex),
-		regLabels:    make([]*widget.Label, numRegisters),
 		cycleLabel:   widget.NewLabel("cycle# --"),
 		switchChecks: make([]*widget.Check, numSwitches),
 		switchLabel:  widget.NewLabelWithStyle("(0x00000)", fyne.TextAlignLeading, fyne.TextStyle{false, false, true}),
@@ -136,47 +129,6 @@ func NewUIState() *UIState {
 		s.hexWidgets[i] = hexwidget.NewHexWidget()
 		s.hexWidgets[i].Update(0xff) // remember they are active low
 	}
-
-	// Because Fyne doesn't have a table widget yet, we fake it by just
-	// having two VBoxes with our two columns of data yet. We need to
-	// keep handles for the register value labels, so we track them
-	// in s.regLabels, this way they can be updaetd as the simulation runs.
-
-	regaddrbox := widget.NewVBox(
-		widget.NewLabelWithStyle(
-			"Register",
-			fyne.TextAlignTrailing,
-			fyne.TextStyle{true, false, false},
-		),
-	)
-
-	reglabelbox := widget.NewVBox(
-		widget.NewLabelWithStyle(
-			"Register",
-			fyne.TextAlignTrailing,
-			fyne.TextStyle{true, false, false},
-		),
-	)
-
-	for i := 0; i < numRegisters; i++ {
-		s.regLabels[i] = widget.NewLabelWithStyle(
-			fmt.Sprintf("0x%02x", 0),
-			fyne.TextAlignLeading,
-			fyne.TextStyle{false, false, true},
-		)
-
-		reglabelbox.Append(s.regLabels[i])
-
-		regaddrbox.Append(
-			widget.NewLabelWithStyle(
-				fmt.Sprintf("0x%02x (x%d)", i, i),
-				fyne.TextAlignLeading,
-				fyne.TextStyle{false, false, true},
-			),
-		)
-	}
-
-	regsplit := widget.NewHSplitContainer(regaddrbox, reglabelbox)
 
 	// now we will set up a container to store the checkboxes used
 	// as switches, and initialize the checks themselves
@@ -198,51 +150,48 @@ func NewUIState() *UIState {
 	}
 
 	// now we create the structure of the window in proper
-	s.widgetTree = widget.NewHSplitContainer(
-		widget.NewVBox(
-			widget.NewHBox(
-				s.hexWidgets[0],
-				s.hexWidgets[1],
-				s.hexWidgets[2],
-				s.hexWidgets[3],
-				s.hexWidgets[4],
-				s.hexWidgets[5],
-				s.hexWidgets[6],
-				s.hexWidgets[7],
-			),
-			widget.NewHBox(
-				widget.NewLabel("LEDR:"),
-				s.ledrWidget,
-				s.ledrLabel,
-			),
-			widget.NewHBox(
-				widget.NewLabel("LEDG:"),
-				s.ledgWidget,
-				s.ledgLabel,
-			),
-			checkcontainer,
-			widget.NewHBox(
-				widget.NewButton("KEY3", func() { s.pushKey(3) }),
-				widget.NewButton("KEY2", func() { s.pushKey(2) }),
-				widget.NewButton("KEY1", func() { s.pushKey(1) }),
-				widget.NewButton("KEY0", func() { s.pushKey(0) }),
-			),
-			widget.NewHBox(
-				s.cycleLabel,
-				widget.NewButton("Tick 1", func() { s.tick(1) }),
-				widget.NewButton("Tick 10", func() { s.tick(10) }),
-				widget.NewButton("Tick 100", func() { s.tick(100) }),
-				widget.NewLabel("n="),
-				s.tickEntry,
-				widget.NewButton("Tick N", func() { s.tick(s.tickEntryVal) }),
-				widget.NewButton("Reset", func() {
-					if s.OnReset != nil {
-						s.OnReset(s)
-					}
-				}),
-			),
+	s.widgetTree = widget.NewVBox(
+		widget.NewHBox(
+			s.hexWidgets[0],
+			s.hexWidgets[1],
+			s.hexWidgets[2],
+			s.hexWidgets[3],
+			s.hexWidgets[4],
+			s.hexWidgets[5],
+			s.hexWidgets[6],
+			s.hexWidgets[7],
 		),
-		widget.NewScrollContainer(regsplit),
+		widget.NewHBox(
+			widget.NewLabel("LEDR:"),
+			s.ledrWidget,
+			s.ledrLabel,
+		),
+		widget.NewHBox(
+			widget.NewLabel("LEDG:"),
+			s.ledgWidget,
+			s.ledgLabel,
+		),
+		checkcontainer,
+		widget.NewHBox(
+			widget.NewButton("KEY3", func() { s.pushKey(3) }),
+			widget.NewButton("KEY2", func() { s.pushKey(2) }),
+			widget.NewButton("KEY1", func() { s.pushKey(1) }),
+			widget.NewButton("KEY0", func() { s.pushKey(0) }),
+		),
+		widget.NewHBox(
+			s.cycleLabel,
+			widget.NewButton("Tick 1", func() { s.tick(1) }),
+			widget.NewButton("Tick 10", func() { s.tick(10) }),
+			widget.NewButton("Tick 100", func() { s.tick(100) }),
+			widget.NewLabel("n="),
+			s.tickEntry,
+			widget.NewButton("Tick N", func() { s.tick(s.tickEntryVal) }),
+			widget.NewButton("Reset", func() {
+				if s.OnReset != nil {
+					s.OnReset(s)
+				}
+			}),
+		),
 	)
 
 	return s
@@ -273,7 +222,6 @@ func (s *UIState) releaseKey(i int) {
 
 // Internal function wired into switch change callbacks
 func (s *UIState) switchUpdate() {
-	s.sw = s.SW()
 	if s.OnSW != nil {
 		s.OnSW(s)
 	}
