@@ -291,16 +291,16 @@ func (s *UIState) ScheduleFuture(when uint64, f func(*UIState)) {
 // SetHEX updates the state of the i-th HEX display. Hex display 0 is the
 // rightmost (least significant)
 //
-//      0
-//    -----
-//   |     |
-// 5 |     | 1
-//   |  6  |
-//    -----
-//   |     |
-// 4 |     | 2
-//   |  3  |
-//    -----
+//       0
+//     -----
+//    |     |
+//  5 |     | 1
+//    |  6  |
+//     -----
+//    |     |
+//  4 |     | 2
+//    |  3  |
+//     -----
 //
 // Segments are packed into a uint8 as shown in the above diagram. Segments
 // are active-low.

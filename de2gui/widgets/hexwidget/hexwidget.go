@@ -62,16 +62,16 @@ func (h *hexRenderer) Objects() []fyne.CanvasObject {
 // of the display mapped active-low onto 7 state bits, with segment 0 in
 // the least significant bit.
 //
-//      0
-//    -----
-//   |     |
-// 5 |     | 1
-//   |  6  |
-//    -----
-//   |     |
-// 4 |     | 2
-//   |  3  |
-//    -----
+//       0
+//     -----
+//    |     |
+//  5 |     | 1
+//    |  6  |
+//     -----
+//    |     |
+//  4 |     | 2
+//    |  3  |
+//     -----
 type HexWidget struct {
 	widget.BaseWidget
 	segments uint8
