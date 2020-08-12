@@ -1,0 +1,19 @@
+version: 2
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build
+
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:latest
+    steps:
+      - checkout
+      - run: go get -u golang.org/x/lint/golint
+      - run: make clean
+      - run: make test
+      - run: make lint
+      - run: sh -c 'GOPROXY="https://proxy.golang.org" GO111MODULE=on go get "github.com/herclab/de2gui" || true'
