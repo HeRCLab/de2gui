@@ -251,6 +251,7 @@ func (s *UIState) tick(count int) {
 		}
 	}
 
+	s.cycleLabel.SetText(fmt.Sprintf("cycle# %d", s.Tick))
 }
 
 // ClearFutures removes all functions scheduled to run in the future.  You
