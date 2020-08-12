@@ -1,5 +1,7 @@
 # de2gui
 
+[![HeRCLab](https://circleci.com/gh/HeRCLab/de2gui.svg?style=svg)](https://app.circleci.com/pipelines/github/HeRCLab/de2gui?branch=master) [![HeRCLab](https://goreportcard.com/badge/github.com/herclab/de2gui)](https://goreportcard.com/report/github.com/herclab/de2gui) [![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/herclab/de2gui)
+
 This package implements a facsimile of some of the intractable components of
 the [Terasic
 DE2-115](https://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&No=502)
