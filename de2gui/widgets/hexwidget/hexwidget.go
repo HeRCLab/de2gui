@@ -58,6 +58,10 @@ func (h *hexRenderer) Objects() []fyne.CanvasObject {
 	return h.segmentObjects
 }
 
+// HexWidget represents a 7-segment hexadecimal display. The segments
+// of the display mapped active-low onto 7 state bits, with segment 0 in
+// the least significant bit.
+//
 //      0
 //    -----
 //   |     |
@@ -73,12 +77,6 @@ type HexWidget struct {
 	segments uint8
 }
 
-func (h *HexWidget) Tapped(ev *fyne.PointEvent) {
-}
-
-func (h *HexWidget) TappedSecondary(ev *fyne.PointEvent) {
-}
-
 func ptToPos(pt image.Point) fyne.Position {
 	return fyne.NewPos(pt.X, pt.Y)
 }
@@ -91,11 +89,12 @@ func setLineEndpoints(l *canvas.Line, pt1, pt2 image.Point) {
 func (h *HexWidget) getSegmentColor(segno int) color.RGBA {
 	if (h.segments & (1 << segno)) == 0 {
 		return hexOnColor
-	} else {
-		return hexOffColor
 	}
+
+	return hexOffColor
 }
 
+// CreateRenderer implements fyne.Widget
 func (h *HexWidget) CreateRenderer() fyne.WidgetRenderer {
 	seg0 := canvas.NewLine(hexOffColor)
 	seg1 := canvas.NewLine(hexOffColor)
@@ -155,15 +154,19 @@ func (h *HexWidget) CreateRenderer() fyne.WidgetRenderer {
 	}
 }
 
+// NewHexWidget instantiates a new widget instance, with all of the segments
+// disabled.
 func NewHexWidget() *HexWidget {
 	h := &HexWidget{
-		segments: 0,
+		segments: 0xff,
 	}
 
 	h.ExtendBaseWidget(h)
 	return h
 }
 
+// Update changes the state of the segments and causes the widget to refresh so
+// the changes are visible to the user.
 func (h *HexWidget) Update(segments uint8) {
 	h.segments = segments
 	widget.Refresh(h)

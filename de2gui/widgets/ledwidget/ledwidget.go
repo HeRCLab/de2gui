@@ -1,4 +1,4 @@
-// package ledwidget defines a GIU widget that mimicss the appearance of the
+// Package ledwidget defines a GIU widget that mimics the appearance of the
 // DE2-115 LED groups.
 package ledwidget
 
@@ -48,6 +48,8 @@ func (l *ledRenderer) Objects() []fyne.CanvasObject {
 	return l.ledObjects
 }
 
+// LedWidget represents a horizontal strip of up to 32 LEDs, all the same
+// color.
 type LedWidget struct {
 	widget.BaseWidget
 	state    uint32
@@ -56,6 +58,7 @@ type LedWidget struct {
 	offColor color.RGBA
 }
 
+// Mask returns a uint32 with all of the bits corresponding to an LED set to 1.
 func (l *LedWidget) Mask() uint32 {
 	mask := uint32(0)
 	for i := 0; i < l.count; i++ {
@@ -64,10 +67,13 @@ func (l *LedWidget) Mask() uint32 {
 	return mask
 }
 
+// State returns the current state of the LEDs in this widget.
 func (l *LedWidget) State() uint32 {
 	return l.state
 }
 
+// Update changes the state of the LEDs in this widget, and triggers the
+// graphical widget to refresh.
 func (l *LedWidget) Update(newstate uint32) {
 	l.state = newstate & l.Mask()
 	widget.Refresh(l)
@@ -77,17 +83,12 @@ func (l *LedWidget) getLedColor(i int) color.RGBA {
 	i = l.count - i - 1
 	if ((1 << i) & l.state) == 0 {
 		return l.offColor
-	} else {
-		return l.onColor
 	}
+
+	return l.onColor
 }
 
-func (l *LedWidget) Tapped(ev *fyne.PointEvent) {
-}
-
-func (l *LedWidget) TappedSecondary(ev *fyne.PointEvent) {
-}
-
+// CreateRenderer implements fyne.Widget
 func (l *LedWidget) CreateRenderer() fyne.WidgetRenderer {
 	r := &ledRenderer{
 		led:        l,
@@ -111,6 +112,9 @@ func (l *LedWidget) CreateRenderer() fyne.WidgetRenderer {
 	return r
 }
 
+// NewLedWidget creates a new LED widget with the given number of LEDs. When an
+// LED is on, it will be displayed with the given onColor, and otherwise as the
+// given offColor.
 func NewLedWidget(count int, onColor, offColor color.RGBA) *LedWidget {
 	l := &LedWidget{
 		state:    0,

@@ -288,7 +288,7 @@ func (s *UIState) ScheduleFuture(when uint64, f func(*UIState)) {
 	s.futures[when] = append(s.futures[when], f)
 }
 
-// SetHex updates the state of the i-th HEX display. Hex display 0 is the
+// SetHEX updates the state of the i-th HEX display. Hex display 0 is the
 // rightmost (least significant)
 //
 //      0
