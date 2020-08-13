@@ -318,6 +318,13 @@ func (s *UIState) ClearSW() {
 	}
 }
 
+// ClearKEY "un-presses" all KEYs. If you have called ClearFutures, you
+// probably want to call this also, since the futures that would have released
+// any pressed keys will now be deleted.
+func (s *UIState) ClearKEY() {
+	s.key = 0
+}
+
 // FyneObject will return a Fyne canvas object which contains all of the
 // widgets and such relating to this instance of the UIState. This should be
 // suitable for use with Window.SetContent. However for more advanced use
