@@ -378,7 +378,7 @@ func (s *UIState) SetLEDR(state uint32) {
 // bits are ignored.
 func (s *UIState) SetLEDG(state uint32) {
 	s.ledgWidget.Update(state)
-	s.ledgLabel.SetText(fmt.Sprintf("(0x%03x)", s.ledrWidget.State()))
+	s.ledgLabel.SetText(fmt.Sprintf("(0x%03x)", s.ledgWidget.State()))
 }
 
 // SW gets the current value of the SW(itch) controls. There are 18
