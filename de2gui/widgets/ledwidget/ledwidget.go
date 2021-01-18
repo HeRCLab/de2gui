@@ -5,14 +5,14 @@ package ledwidget
 import (
 	"image/color"
 
-	"fyne.io/fyne"
-	"fyne.io/fyne/canvas"
-	"fyne.io/fyne/theme"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/v2/widget"
 )
 
-var ledRadius = 5
-var ledBoxSize = 15 // pading "box" around the LED
+var ledRadius float32 = 5.0
+var ledBoxSize float32 = 15.0 // pading "box" around the LED
 
 type ledRenderer struct {
 	led        *LedWidget
@@ -20,7 +20,7 @@ type ledRenderer struct {
 }
 
 func (l *ledRenderer) MinSize() fyne.Size {
-	return fyne.NewSize(l.led.count*ledBoxSize+theme.Padding()*2, int(ledBoxSize+theme.Padding()*2))
+	return fyne.NewSize(float32(l.led.count)*ledBoxSize+float32(theme.Padding())*2, ledBoxSize+float32(theme.Padding())*2)
 }
 
 func (l *ledRenderer) Layout(size fyne.Size) {
@@ -76,7 +76,7 @@ func (l *LedWidget) State() uint32 {
 // graphical widget to refresh.
 func (l *LedWidget) Update(newstate uint32) {
 	l.state = newstate & l.Mask()
-	widget.Refresh(l)
+	l.Refresh()
 }
 
 func (l *LedWidget) getLedColor(i int) color.RGBA {
@@ -100,7 +100,7 @@ func (l *LedWidget) CreateRenderer() fyne.WidgetRenderer {
 
 		// top-left corner of circle's bounding box
 		led.Move(fyne.Position{
-			theme.Padding() + i*ledBoxSize + ledRadius,
+			theme.Padding() + float32(i)*ledBoxSize + ledRadius,
 			theme.Padding() + ledRadius,
 		})
 

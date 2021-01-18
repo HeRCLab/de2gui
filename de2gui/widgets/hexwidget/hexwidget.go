@@ -5,10 +5,10 @@ import (
 	"image"
 	"image/color"
 
-	"fyne.io/fyne"
-	"fyne.io/fyne/canvas"
-	"fyne.io/fyne/theme"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/v2/widget"
 )
 
 // size in pixels of the hex widget
@@ -31,7 +31,7 @@ type hexRenderer struct {
 }
 
 func (h *hexRenderer) MinSize() fyne.Size {
-	return fyne.NewSize(int(hexWidth)+theme.Padding()*2, int(hexHeight)+theme.Padding()*2)
+	return fyne.NewSize(float32(hexWidth)+theme.Padding()*2, float32(hexHeight)+theme.Padding()*2)
 }
 
 func (h *hexRenderer) Layout(size fyne.Size) {
@@ -78,12 +78,12 @@ type HexWidget struct {
 }
 
 func ptToPos(pt image.Point) fyne.Position {
-	return fyne.NewPos(pt.X, pt.Y)
+	return fyne.NewPos(float32(pt.X), float32(pt.Y))
 }
 
 func setLineEndpoints(l *canvas.Line, pt1, pt2 image.Point) {
-	l.Move(fyne.NewPos(pt1.X, pt1.Y))
-	l.Resize(fyne.NewSize(pt2.X-pt1.X, pt2.Y-pt1.Y))
+	l.Move(fyne.NewPos(float32(pt1.X), float32(pt1.Y)))
+	l.Resize(fyne.NewSize(float32(pt2.X-pt1.X), float32(pt2.Y-pt1.Y)))
 }
 
 func (h *HexWidget) getSegmentColor(segno int) color.RGBA {
@@ -169,5 +169,5 @@ func NewHexWidget() *HexWidget {
 // the changes are visible to the user.
 func (h *HexWidget) Update(segments uint8) {
 	h.segments = segments
-	widget.Refresh(h)
+	h.Refresh()
 }

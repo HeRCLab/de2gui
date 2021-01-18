@@ -5,7 +5,7 @@ package main
 import (
 	"fmt"
 
-	"fyne.io/fyne/app"
+	"fyne.io/fyne/v2/app"
 
 	"github.com/herclab/de2gui/de2gui"
 )

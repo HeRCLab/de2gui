@@ -11,8 +11,9 @@ import (
 	"sync"
 	"time"
 
-	"fyne.io/fyne"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 
 	"github.com/herclab/de2gui/de2gui/widgets/hexwidget"
 	"github.com/herclab/de2gui/de2gui/widgets/ledwidget"
@@ -146,10 +147,10 @@ func NewUIState() *UIState {
 
 	// now we will set up a container to store the checkboxes used
 	// as switches, and initialize the checks themselves
-	checkcontainer := widget.NewHBox(widget.NewLabel("SW:"))
+	checkcontainer := container.NewHBox(widget.NewLabel("SW:"))
 	for i := 0; i < numSwitches; i++ {
 		s.switchChecks[i] = widget.NewCheck("", func(dummy bool) { s.switchUpdate() })
-		checkcontainer.Children = append(checkcontainer.Children, s.switchChecks[i])
+		checkcontainer.Objects = append(checkcontainer.Objects, s.switchChecks[i])
 	}
 
 	// setup s.tickEntryVal to update when the entry is changed
@@ -164,8 +165,8 @@ func NewUIState() *UIState {
 	}
 
 	// now we create the structure of the window in proper
-	s.widgetTree = widget.NewVBox(
-		widget.NewHBox(
+	s.widgetTree = container.NewVBox(
+		container.NewHBox(
 			s.hexWidgets[0],
 			s.hexWidgets[1],
 			s.hexWidgets[2],
@@ -175,24 +176,24 @@ func NewUIState() *UIState {
 			s.hexWidgets[6],
 			s.hexWidgets[7],
 		),
-		widget.NewHBox(
+		container.NewHBox(
 			widget.NewLabel("LEDR:"),
 			s.ledrWidget,
 			s.ledrLabel,
 		),
-		widget.NewHBox(
+		container.NewHBox(
 			widget.NewLabel("LEDG:"),
 			s.ledgWidget,
 			s.ledgLabel,
 		),
 		checkcontainer,
-		widget.NewHBox(
+		container.NewHBox(
 			widget.NewButton("KEY3", func() { s.pushKey(3) }),
 			widget.NewButton("KEY2", func() { s.pushKey(2) }),
 			widget.NewButton("KEY1", func() { s.pushKey(1) }),
 			widget.NewButton("KEY0", func() { s.pushKey(0) }),
 		),
-		widget.NewHBox(
+		container.NewHBox(
 			s.cycleLabel,
 			widget.NewButton("Tick 1", func() { s.tick(1) }),
 			widget.NewButton("Tick 10", func() { s.tick(10) }),
@@ -314,7 +315,7 @@ func (s *UIState) ClearFutures() {
 func (s *UIState) ClearSW() {
 	for i := 0; i < numSwitches; i++ {
 		s.switchChecks[i].Checked = false
-		widget.Refresh(s.switchChecks[i])
+		s.switchChecks[i].Refresh()
 	}
 }
 
